@@ -16,11 +16,14 @@
 
 package com.google.common.base;
 
-import java.util.concurrent.TimeUnit;
+import static jsinterop.annotations.JsPackage.GLOBAL;
 
-/**
- * @author Jesse Wilson
- */
+import java.util.concurrent.TimeUnit;
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsType;
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+
+/** @author Jesse Wilson */
 final class Platform {
   static CharMatcher precomputeCharMatcher(CharMatcher matcher) {
     // CharMatcher.precomputed() produces CharMatchers that are maybe a little
@@ -42,6 +45,38 @@ final class Platform {
     } catch (IllegalArgumentException iae) {
       return Optional.absent();
     }
+  }
+
+  static String formatCompact4Digits(double value) {
+    return "" + ((Number) (Object) value).toPrecision(4);
+  }
+
+  @JsMethod
+  static native boolean stringIsNullOrEmpty(@NullableDecl String string) /*-{
+    return !string;
+  }-*/;
+
+  @JsMethod
+  static native String nullToEmpty(@NullableDecl String string) /*-{
+    return string || "";
+  }-*/;
+
+  @JsMethod
+  static native String emptyToNull(@NullableDecl String string) /*-{
+    return string || null;
+  }-*/;
+
+  @JsType(isNative = true, name = "Number", namespace = GLOBAL)
+  private interface Number {
+    double toPrecision(int precision);
+  }
+
+  static CommonPattern compilePattern(String pattern) {
+    throw new UnsupportedOperationException();
+  }
+
+  static boolean usingJdkPatternCompiler() {
+    return false;
   }
 
   private Platform() {}
